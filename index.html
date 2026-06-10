@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>PFL 2026 — The Second Screen · bet365</title>
+<style>
+  :root{
+    --navy:#020717; --navy-2:#060d22; --panel:#0c1530; --panel-2:#111c3d;
+    --red:#e6172a; --red-soft:#ff2f42; --blue:#1f6fff; --blue-soft:#3b87ff;
+    --ink:#f4f7ff; --muted:#8da0c4; --muted-2:#5d6f96; --line:rgba(120,150,210,.14);
+    --maxw:1180px;
+    /* ---- bet365 product tokens (from real app screens) ---- */
+    --b-bg:#0b0f10; --b-bg-2:#15191b; --b-row:#1c2123; --b-row-2:#21282a;
+    --b-head-1:#0d3d2e; --b-head-2:#0a2a20; --b-ink:#ffffff; --b-muted:#9fb0ab; --b-muted-2:#6f827c;
+    --b-odds:#f5c518; --b-green:#00a96a; --b-green-bright:#1ad389; --b-line:rgba(255,255,255,.08);
+    --b-live:#d8232a; --b-acca:#ffffff;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--navy); color:var(--ink);
+    font-family:"Inter","Helvetica Neue",Arial,sans-serif; -webkit-font-smoothing:antialiased;}
+  body{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:32px 24px;
+    background:
+      radial-gradient(1100px 500px at 78% -10%, rgba(0,169,106,.10), transparent 60%),
+      radial-gradient(900px 500px at 12% 110%, rgba(230,23,42,.10), transparent 55%),
+      var(--navy);
+  }
+  .deck{width:100%; max-width:var(--maxw);}
+
+  .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:22px;}
+  .eyebrow{font-size:11px; letter-spacing:.32em; color:var(--muted); font-weight:700; text-transform:uppercase;}
+  .pageno{font-size:11px; letter-spacing:.22em; color:var(--muted-2); font-weight:700; display:flex; align-items:center; gap:10px;}
+  .pageno .logo{font-family:"Arial Black",Impact,sans-serif; font-weight:900; letter-spacing:-.02em;}
+  .pageno .logo b{color:var(--red);}
+
+  h1.title{font-family:"Arial Narrow","Arial Black",Impact,sans-serif; font-weight:900;
+    font-size:clamp(30px,4.4vw,52px); line-height:.96; letter-spacing:.005em; text-transform:uppercase;
+    transform:scaleX(.94); transform-origin:left;}
+  h1.title em{color:var(--red); font-style:normal;}
+  .subtitle{color:var(--muted); font-size:15px; max-width:660px; margin-top:14px; line-height:1.5;}
+  .subtitle b{color:var(--ink); font-weight:600;}
+
+  .grid{display:grid; grid-template-columns:minmax(0,300px) minmax(0,1fr); gap:30px; margin-top:26px; align-items:start;}
+
+  /* ---- PHONE ---- */
+  .phone-wrap{display:flex; flex-direction:column; align-items:center; gap:16px;}
+  .phone{width:296px; height:612px; border-radius:44px; background:#000; padding:11px;
+    border:1px solid rgba(150,175,230,.22);
+    box-shadow:0 30px 70px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,255,255,.04);
+    position:relative; flex:none;}
+  .notch{position:absolute; top:11px; left:50%; transform:translateX(-50%); width:120px; height:26px;
+    background:#000; border-radius:0 0 16px 16px; z-index:60;}
+  .screen{width:100%; height:100%; border-radius:33px; overflow:hidden; background:var(--b-bg); position:relative;}
+
+  /* status bar */
+  .statusbar{height:34px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 18px 4px;
+    font-size:11px; font-weight:700; color:#fff; position:relative; z-index:5;
+    background:linear-gradient(180deg,var(--b-head-1),var(--b-head-2));}
+  .statusbar .r{display:flex; gap:5px; align-items:center; font-size:10px;}
+
+  .stage{position:absolute; inset:0; opacity:0; transition:opacity .4s ease; pointer-events:none;
+    display:flex; flex-direction:column;}
+  .stage.on{opacity:1; pointer-events:auto;}
+
+  /* app header (green gradient) */
+  .b-head{background:linear-gradient(180deg,var(--b-head-1),var(--b-head-2)); padding:6px 12px 12px; flex:none;}
+  .b-head .top{display:flex; align-items:center; gap:10px;}
+  .b-head .circ{width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,.12);
+    display:flex; align-items:center; justify-content:center; font-size:13px; color:#fff; flex:none;}
+  .b-head-logo{height:18px; width:auto; flex:none; border-radius:3px; display:block;}
+  .b-head .ttl{flex:1; text-align:center; font-size:12px; font-weight:700; line-height:1.2; color:#fff; padding:0 4px;}
+  .b-head .ttl .chev{color:var(--b-green-bright);}
+  .b-logo{height:15px; display:block; margin:0 auto;}
+
+  /* tabs row (All · Fight Lines ...) */
+  .b-tabs{display:flex; gap:0; background:var(--b-bg); border-bottom:1px solid var(--b-line); flex:none;
+    padding:0 4px; overflow:hidden;}
+  .b-tabs span{font-size:11px; font-weight:700; color:var(--b-muted); padding:11px 9px; white-space:nowrap; position:relative;}
+  .b-tabs span.act{color:var(--b-green-bright);}
+  .b-tabs span.act::after{content:""; position:absolute; left:9px; right:9px; bottom:0; height:2px; background:var(--b-green-bright);}
+  .b-tabs .ham{padding-left:8px; color:var(--b-muted);}
+
+  .body{flex:1; overflow:hidden; display:flex; flex-direction:column; background:var(--b-bg);}
+
+  /* acca boost strip */
+  .acca{display:flex; justify-content:flex-end; padding:9px 14px 7px; background:var(--b-bg);}
+  .acca span{font-size:11px; font-weight:800; font-style:italic; letter-spacing:.04em; color:#fff;}
+
+  /* market column header */
+  .mhead{display:grid; grid-template-columns:1fr 46px 46px 42px; background:var(--b-bg-2); padding:8px 10px;
+    font-size:10px; font-weight:700; color:var(--b-ink);}
+  .mhead .d{font-size:9px; color:var(--b-muted);}
+  .mhead .c{text-align:center;}
+
+  /* fight row */
+  .frow{display:grid; grid-template-columns:1fr 46px 46px 42px; padding:11px 10px 9px; border-bottom:1px solid var(--b-line);
+    background:var(--b-bg); position:relative;}
+  .frow .fighters{display:flex; flex-direction:column; gap:7px;}
+  .frow .fr{display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--b-ink);}
+  .frow .trunk{width:13px; height:13px; border-radius:2px; flex:none; background:#333;}
+  .frow .meta{font-size:10px; color:var(--b-muted); margin-top:7px; display:flex; align-items:center; gap:7px;}
+  .frow .chip{background:var(--b-green); color:#04130d; font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px; display:inline-flex; align-items:center; gap:2px;}
+  .ocol{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding-top:2px;}
+  .ocell{text-align:center; line-height:1.25;}
+  .ocell .lab{font-size:10px; color:var(--b-muted);}
+  .ocell .od{font-size:13px; font-weight:700; color:var(--b-odds); font-variant-numeric:tabular-nums; transition:color .3s;}
+  .ocell.towin{justify-content:center;}
+  .ocol.towin{justify-content:space-around;}
+  .ocell .od.big{font-size:14px;}
+  . flash{}
+  .ocell.up .od{animation:flashgreen .7s ease;}
+  .ocell.down .od{animation:flashred .7s ease;}
+
+  /* live stream hero (video) */
+  .streamwrap{position:relative; background:#000; flex:none; overflow:hidden;}
+  .streamwrap video{width:100%; display:block; object-fit:cover;}
+  .stream-tag{position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
+    background:rgba(0,0,0,.55); padding:3px 8px; border-radius:5px; font-size:9px; font-weight:800; letter-spacing:.08em; color:#fff; z-index:3;}
+  .live-dot{width:6px; height:6px; border-radius:50%; background:var(--b-live); animation:pulse 1.1s infinite;}
+  .stream-badge{position:absolute; top:8px; right:8px; background:var(--b-live); color:#fff; font-size:9px; font-weight:800;
+    padding:3px 7px; border-radius:4px; letter-spacing:.06em; z-index:3;}
+  .stream-score{position:absolute; bottom:30px; left:8px; right:8px; display:flex; align-items:center; justify-content:space-between;
+    background:linear-gradient(0deg,rgba(0,0,0,.75),transparent); padding:10px 6px 5px; z-index:3;}
+  .stream-score .sf{font-size:10px; font-weight:800; color:#fff; text-shadow:0 1px 3px #000;}
+  .stream-score .rnd{font-size:9px; font-weight:700; color:var(--b-odds);}
+  .sound-pill{position:absolute; bottom:7px; left:8px; z-index:4; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.25);
+    color:#fff; font-size:10px; padding:4px 8px; border-radius:20px; cursor:pointer; display:flex; align-items:center; gap:5px;}
+
+  /* matchup data panel (FORM / SIG STRIKES / GRAPPLING + WINS BY) */
+  .mpanel{background:var(--b-bg); padding:10px 12px 4px; flex:none;}
+  .mp-tri{display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; text-align:center; padding-bottom:8px; border-bottom:1px solid var(--b-line);}
+  .mp-tri .h{font-size:9px; font-weight:800; color:var(--b-ink); letter-spacing:.02em;}
+  .mp-tri .h.act{color:#fff;} .mp-tri .h.act::after{content:""; display:block; height:2px; background:var(--b-live); margin:3px auto 0; width:30px;}
+  .mp-tri .v{font-size:11px; font-weight:800; color:var(--b-ink); margin-top:5px; font-variant-numeric:tabular-nums;}
+  .mp-tri .dots{margin-top:5px; font-size:8px; letter-spacing:1px; color:var(--b-green);}
+  .mp-sub{font-size:8px; color:var(--b-muted); margin-top:3px;}
+  .mp-winsby{text-align:center; font-size:9px; font-weight:800; color:var(--b-ink); padding:8px 0 6px; letter-spacing:.06em;}
+  .wb-row{display:flex; align-items:center; gap:8px; font-size:9px; margin-bottom:5px;}
+  .wb-row .v{width:30px; font-weight:800; color:var(--b-ink); font-variant-numeric:tabular-nums;}
+  .wb-row .v.l{text-align:right;}
+  .wb-row .lbl{flex:1; text-align:center; color:var(--b-muted); font-weight:700; letter-spacing:.03em;}
+  .wb-row .tk{position:relative; height:4px; width:64px; background:rgba(255,255,255,.08); border-radius:3px;}
+  .wb-row .tk i{position:absolute; top:0; height:100%; border-radius:3px;}
+  .wb-row .tk.l i{right:0; background:#f0716f;} .wb-row .tk.r i{left:0; background:#36b6e8;}
+
+  /* in-play markets block */
+  .ipblock{padding:2px 0 0; background:var(--b-bg); overflow-y:auto;}
+  .ip-grouphd{display:flex; align-items:center; justify-content:space-between; padding:9px 12px 7px; background:var(--b-bg-2);}
+  .ip-grouphd .t{font-size:11px; font-weight:800; color:var(--b-ink);}
+  .ip-grouphd .cashout{font-size:9px; font-weight:800; color:var(--b-green-bright); border:1px solid var(--b-green); border-radius:4px; padding:2px 7px;}
+  .ip-mkt{padding:9px 12px; border-bottom:1px solid var(--b-line);}
+  .ip-mkt .ttl{font-size:11px; font-weight:700; color:var(--b-muted); margin-bottom:8px;}
+  .ip-opts{display:flex; gap:7px;}
+  .ip-opt{flex:1; background:var(--b-row); border:1px solid var(--b-line); border-radius:6px; padding:8px 6px;
+    display:flex; flex-direction:column; align-items:center; gap:3px;}
+  .ip-opt .nm{font-size:10px; color:var(--b-ink); font-weight:600;}
+  .ip-opt .od{font-size:14px; font-weight:800; color:var(--b-odds); font-variant-numeric:tabular-nums; transition:color .3s;}
+  .ip-opt.up .od{animation:flashgreen .7s ease;}
+  .ip-opt.down .od{animation:flashred .7s ease;}
+
+  /* bet slip (slides up) */
+  .betslip{position:absolute; left:0; right:0; bottom:46px; background:var(--b-bg-2); border-top:2px solid var(--b-green);
+    padding:11px 12px 13px; transform:translateY(120%); transition:transform .45s cubic-bezier(.2,.8,.2,1); z-index:30;}
+  .betslip.up{transform:translateY(0);}
+  .bs-hd{display:flex; align-items:center; justify-content:space-between; margin-bottom:9px;}
+  .bs-hd .t{font-size:11px; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;}
+  .bs-hd .cnt{background:var(--b-green); color:#04130d; font-size:9px; font-weight:800; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+  .bs-hd .edit{font-size:10px; color:var(--b-green-bright); font-weight:700;}
+  .bs-sel{background:var(--b-row); border-radius:6px; padding:8px 9px; margin-bottom:9px;}
+  .bs-sel .pick{font-size:11px; font-weight:700; color:#fff; display:flex; justify-content:space-between;}
+  .bs-sel .pick .o{color:var(--b-odds);}
+  .bs-sel .mk{font-size:9px; color:var(--b-muted); margin-top:2px;}
+  .bs-stake{display:flex; gap:8px; align-items:center; margin-bottom:9px;}
+  .bs-stake .field{flex:1; background:#fff; border-radius:6px; padding:8px 10px; font-size:12px; font-weight:700; color:#111; display:flex; justify-content:space-between;}
+  .bs-stake .ret{font-size:9px; color:var(--b-muted); text-align:right; line-height:1.3;}
+  .bs-stake .ret b{display:block; color:#fff; font-size:12px;}
+  .bs-place{width:100%; background:var(--b-odds); color:#1a1400; border:0; border-radius:7px; padding:11px; font-size:13px; font-weight:800; letter-spacing:.02em; cursor:pointer;}
+
+  /* winner / settlement */
+  .win{flex:1; display:flex; flex-direction:column; justify-content:center; padding:20px 18px; position:relative; background:var(--b-bg);
+    background-image:radial-gradient(360px 300px at 28% 26%, rgba(0,169,106,.16), transparent 62%);}
+  .win .crown{font-size:17px; color:var(--b-odds);}
+  .win .wname{font-family:"Arial Narrow",Arial,sans-serif; font-weight:900; font-size:33px; line-height:.95; margin-top:6px; text-transform:uppercase; color:#fff;}
+  .win .wdiv{display:inline-block; background:rgba(255,255,255,.1); font-size:9px; padding:4px 8px; border-radius:5px; margin-top:12px; letter-spacing:.06em; color:#fff;}
+  .win .wres{font-size:28px; font-weight:900; margin-top:14px; color:#fff;}
+  .win .wres em{color:var(--b-odds); font-style:normal;}
+  .win .wko{font-family:"Arial Narrow",Arial,sans-serif; font-weight:900; font-size:44px; margin-top:2px; color:#fff;}
+  .win .wmeta{font-size:10px; color:var(--b-muted); margin-top:13px; letter-spacing:.06em;}
+  .win .wmeta b{color:var(--b-odds);}
+  .win .payout{margin-top:16px; background:var(--b-bg-2); border:1px solid var(--b-green); border-radius:9px; padding:11px 12px; display:flex; align-items:center; gap:10px;}
+  .win .payout .pi{width:24px; height:24px; border-radius:50%; background:var(--b-green); color:#04130d; display:flex; align-items:center; justify-content:center; flex:none; font-size:13px; font-weight:900;}
+  .win .payout .pt{font-size:9px; color:var(--b-muted); letter-spacing:.06em;}
+  .win .payout .pt b{display:block; font-size:15px; color:#fff; margin-top:1px;}
+
+  /* highlights / between fights */
+  .between{flex:1; padding:11px 12px; display:flex; flex-direction:column; gap:9px; background:var(--b-bg); overflow:hidden;}
+  .br-head{font-size:10px; letter-spacing:.1em; color:var(--b-muted); font-weight:800; text-transform:uppercase;}
+  .hl-clip{position:relative; border-radius:9px; overflow:hidden; background:#000; flex:none;}
+  .hl-clip video{width:100%; display:block; object-fit:cover; max-height:128px;}
+  .hl-clip .tag{position:absolute; top:7px; left:7px; background:var(--b-live); color:#fff; font-size:8px; font-weight:800; padding:2px 6px; border-radius:4px; letter-spacing:.05em; z-index:3;}
+  .hl-clip .cap{position:absolute; bottom:6px; left:8px; right:8px; font-size:9px; font-weight:800; color:#fff; text-shadow:0 1px 4px #000; z-index:3;}
+  .hl-clip .snd{position:absolute; bottom:6px; right:7px; z-index:4; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.25); color:#fff; font-size:9px; padding:3px 7px; border-radius:14px; cursor:pointer;}
+  .arch-row{display:flex; gap:7px;}
+  .arch{flex:1; height:50px; border-radius:7px; border:1px solid var(--b-line); position:relative; overflow:hidden;
+    background:var(--b-row); display:flex; align-items:flex-end; padding:6px;}
+  .arch span{font-size:8px; font-weight:800; color:#fff; letter-spacing:.02em;}
+  .offer{display:flex; align-items:center; gap:9px; background:var(--b-bg-2); border:1px solid var(--b-green); border-radius:8px; padding:9px 10px;}
+  .offer .ic{width:28px; height:28px; border-radius:6px; background:var(--b-green); color:#04130d; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; flex:none;}
+  .offer .tx{font-size:9px; color:var(--b-muted); line-height:1.35;}
+  .offer .tx b{color:#fff; display:block; font-size:10px;}
+  .offer .go{margin-left:auto; background:var(--b-odds); color:#1a1400; font-size:9px; font-weight:800; padding:5px 10px; border-radius:5px;}
+
+  /* bottom nav */
+  .bnav{height:46px; background:#f1f3f2; display:flex; align-items:center; justify-content:space-around; flex:none; position:relative; z-index:10;}
+  .bnav .it{display:flex; flex-direction:column; align-items:center; gap:1px; font-size:8.5px; font-weight:700; color:#2b3a34;}
+  .bnav .it .ic{font-size:15px; line-height:1;}
+  .bnav .it.home{color:var(--b-green);}
+  .bnav .it .bal{font-size:9px; font-weight:800; color:var(--b-green);}
+  .bnav .it .badge{position:absolute; margin-top:-4px; margin-left:14px; background:#222; color:#fff; font-size:7px; font-weight:800; width:12px; height:12px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+
+  /* scrubber + caption + controls */
+  .scrub{display:flex; gap:7px; align-items:center; width:296px;}
+  .seg{flex:1; height:5px; background:rgba(140,160,210,.22); border-radius:3px; overflow:hidden; cursor:pointer; transition:.2s;}
+  .seg:hover{background:rgba(140,160,210,.4);}
+  .seg i{display:block; height:100%; width:0; background:var(--b-green);}
+  .seg.done i{width:100%;} .seg.active i{animation:fill var(--dur,5s) linear forwards;}
+  .phase-cap{text-align:center; min-height:42px;}
+  .phase-cap .pk{font-size:10px; letter-spacing:.2em; color:var(--b-green-bright); font-weight:800; text-transform:uppercase;}
+  .phase-cap .pd{font-size:12px; color:var(--muted); margin-top:4px; line-height:1.4; max-width:284px;}
+  .ctrls{display:flex; gap:8px; justify-content:center;}
+  .ctrls button{background:var(--panel); color:#fff; border:1px solid var(--line); border-radius:8px; padding:7px 13px; font-size:11px; font-weight:700; cursor:pointer; letter-spacing:.04em; transition:.2s;}
+  .ctrls button:hover{background:var(--panel-2); border-color:rgba(120,150,210,.3);}
+  .ctrls button.play{background:var(--b-green); border-color:var(--b-green); color:#04130d;}
+
+  /* ---- RIGHT COLUMN ---- */
+  .rcol{display:flex; flex-direction:column; gap:16px;}
+  .feature{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:15px 17px; cursor:pointer; transition:.25s; position:relative; overflow:hidden;}
+  .feature::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--red); opacity:0; transition:.25s;}
+  .feature:hover{background:var(--panel-2); transform:translateX(3px);}
+  .feature:hover::before{opacity:1;}
+  .feature.lit{background:var(--panel-2);} .feature.lit::before{opacity:1;}
+  .feature .fnum{position:absolute; top:12px; right:16px; font-family:"Arial Narrow",Arial,sans-serif; font-weight:900; font-size:28px; color:rgba(120,150,210,.13); line-height:1;}
+  .feature .fh{display:flex; align-items:center; gap:10px;}
+  .feature .ficon{width:30px; height:30px; border-radius:8px; background:rgba(230,23,42,.16); color:var(--red-soft); display:flex; align-items:center; justify-content:center; font-size:15px; flex:none;}
+  .feature h3{font-family:"Arial Narrow",Arial,sans-serif; font-weight:800; font-size:15px; letter-spacing:.02em; text-transform:uppercase;}
+  .feature p{font-size:12px; color:var(--muted); line-height:1.5; margin-top:7px;}
+
+  .powered{display:flex; align-items:center; gap:11px; padding:13px 17px; background:linear-gradient(100deg, rgba(0,169,106,.12), transparent); border:1px solid var(--line); border-radius:14px;}
+  .powered .px{font-size:10px; color:var(--muted); letter-spacing:.16em; font-weight:700; text-transform:uppercase;}
+  .powered img{height:17px;}
+  .powered .x{color:var(--muted); font-weight:700;}
+  .powered .sr{font-family:"Arial Narrow",Arial,sans-serif; font-weight:900; font-size:17px; color:var(--b-green-bright); letter-spacing:.02em;}
+
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:28px; border-top:1px solid var(--line); padding-top:22px;}
+  .stat .sv{font-family:"Arial Narrow",Arial,sans-serif; font-weight:900; font-size:clamp(28px,3.4vw,40px); line-height:1; color:#fff;}
+  .stat .sv em{color:var(--red); font-style:normal;}
+  .stat .sl{font-size:10.5px; color:var(--muted); margin-top:7px; letter-spacing:.05em; line-height:1.4; text-transform:uppercase; font-weight:600;}
+
+  .disclaimer{margin-top:18px; font-size:10px; color:var(--muted-2); font-style:italic; line-height:1.5;}
+
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+  @keyframes fill{from{width:0;}to{width:100%;}}
+  @keyframes flashgreen{0%{color:var(--b-green-bright);}100%{color:var(--b-odds);}}
+  @keyframes flashred{0%{color:var(--b-live);}100%{color:var(--b-odds);}}
+
+  @media(max-width:860px){
+    .grid{grid-template-columns:1fr;} .phone-wrap{order:2;}
+    .stats{grid-template-columns:1fr 1fr;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .seg.active i{animation:none; width:100%;} .live-dot{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <div class="topbar">
+    <span class="eyebrow">Product &amp; Tech · Betting</span>
+    <span class="pageno"><span class="logo">P<b>F</b>L</span> 2026 GTM · 15 / 16</span>
+  </div>
+
+  <h1 class="title">THE SECOND SCREEN<br>IS THE <em>OCTAGON</em></h1>
+  <p class="subtitle">The PFL Event Centre, skinned into <b>bet365</b>: fans watch the live stream, react to every shift in the odds, and place in-play &amp; micro-bets without leaving the action — all powered by the PFL × Sportradar global betting feed.</p>
+
+  <div class="grid">
+
+    <!-- ============ PHONE ============ -->
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen" id="screen">
+
+          <!-- STAGE 1 : PRE-MATCH FIGHT LINES -->
+          <div class="stage on" data-stage="0">
+            <div class="statusbar"><span>16:08</span><span class="r">▦ ▤ ▮</span></div>
+            <div class="b-head">
+              <div class="top">
+                <img class="b-head-logo" src="assets/bet365_logo.png" alt="bet365">
+                <span class="ttl">PFL 2026 · Hughes vs Nurmagomedov <span class="chev">⌄</span></span>
+                <span class="circ">⇪</span>
+              </div>
+            </div>
+            <div class="b-tabs"><span class="ham">☰ All</span><span class="act">Fight Lines</span><span>Method of Victory</span><span>Round Betting</span><span>Total</span></div>
+            <div class="streamwrap">
+              <video id="vid-preview" muted loop playsinline preload="auto" poster="assets/hughes_poster.jpg">
+                <source src="assets/hughes_stream.mp4" type="video/mp4">
+              </video>
+              <span class="stream-tag"><span class="live-dot" style="background:var(--b-odds);"></span>WATCH · PREVIEW</span>
+              <span class="stream-badge" style="background:var(--b-green);">MAIN EVENT</span>
+              <button class="sound-pill" data-sound="vid-preview">🔇 Tap for sound</button>
+            </div>
+            <div class="body">
+              <div class="acca"><span>ACCA BOOST</span></div>
+              <div class="mhead"><span>Sat 14 Jun</span><span class="c d">Spread</span><span class="c d">Total</span><span class="c d">To Win</span></div>
+              <div class="frow">
+                <div class="fighters">
+                  <div class="fr"><span class="trunk" style="background:#1a1a1a;"></span>Paul Hughes</div>
+                  <div class="fr"><span class="trunk" style="background:#e2e2e2;"></span>Usman Nurmagomedov</div>
+                  <div class="meta">20:00 <span class="chip">2 »</span></div>
+                </div>
+                <div class="ocol">
+                  <div class="ocell"><div class="lab">-1.5</div><div class="od">2.20</div></div>
+                  <div class="ocell"><div class="lab">+1.5</div><div class="od">1.66</div></div>
+                </div>
+                <div class="ocol">
+                  <div class="ocell"><div class="lab">O 2.5</div><div class="od">1.90</div></div>
+                  <div class="ocell"><div class="lab">U 2.5</div><div class="od">1.90</div></div>
+                </div>
+                <div class="ocol towin">
+                  <div class="ocell towin" id="o-hughes"><div class="od big">2.50</div></div>
+                  <div class="ocell towin" id="o-usman"><div class="od big">1.53</div></div>
+                </div>
+              </div>
+              <div class="ip-mkt" style="border-bottom:none;">
+                <div class="ttl">Method of victory · Hughes</div>
+                <div class="ip-opts">
+                  <div class="ip-opt"><span class="nm">KO/TKO</span><span class="od">3.75</span></div>
+                  <div class="ip-opt"><span class="nm">SUB</span><span class="od">6.50</span></div>
+                  <div class="ip-opt"><span class="nm">DECISION</span><span class="od">4.20</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="bnav">
+              <div class="it home"><span class="ic">⌂</span><span class="bal">£74.50</span></div>
+              <div class="it"><span class="ic">⌕</span>All Sports</div>
+              <div class="it"><span class="ic">((•))</span>In-Play</div>
+              <div class="it"><span class="ic">✓</span><span class="badge">1</span>My Bets</div>
+              <div class="it"><span class="ic">▦</span>Casino</div>
+            </div>
+          </div>
+
+          <!-- STAGE 2 : IN-PLAY (live stream + swinging odds) -->
+          <div class="stage" data-stage="1">
+            <div class="statusbar"><span>20:14</span><span class="r">▦ ▤ ▮</span></div>
+            <div class="b-head" style="padding-bottom:8px;">
+              <div class="top">
+                <img class="b-head-logo" src="assets/bet365_logo.png" alt="bet365">
+                <span class="ttl">Hughes vs Nurmagomedov <span class="chev">⌄</span></span>
+                <span class="circ">⇪</span>
+              </div>
+            </div>
+            <div class="streamwrap">
+              <video id="vid-stream" muted loop playsinline preload="auto" poster="assets/hughes_poster.jpg">
+                <source src="assets/hughes_stream.mp4" type="video/mp4">
+              </video>
+              <span class="stream-tag"><span class="live-dot"></span>LIVE STREAM</span>
+              <span class="stream-badge">R2 · 0:12</span>
+              <div class="stream-score"><span class="sf">HUGHES</span><span class="rnd">ROUND 2 OF 3</span><span class="sf">NURMAGOMEDOV</span></div>
+              <button class="sound-pill" data-sound="vid-stream">🔇 Tap for sound</button>
+            </div>
+            <div class="b-tabs"><span class="ham">☰</span><span class="act">In-Play</span><span>Cash Out</span><span>Stats</span><span>Markets</span></div>
+            <div class="ipblock body">
+              <div class="ip-grouphd"><span class="t">Live fight winner</span><span class="cashout">CASH OUT £14.20</span></div>
+              <div class="ip-mkt">
+                <div class="ip-opts">
+                  <div class="ip-opt up" id="l-hughes"><span class="nm">HUGHES</span><span class="od">1.85</span></div>
+                  <div class="ip-opt down" id="l-usman"><span class="nm">NURMAGOMEDOV</span><span class="od">1.95</span></div>
+                </div>
+              </div>
+              <div class="ip-grouphd"><span class="t">Live · this round</span></div>
+              <div class="ip-mkt">
+                <div class="ip-opts">
+                  <div class="ip-opt"><span class="nm">HUGHES KO</span><span class="od">4.50</span></div>
+                  <div class="ip-opt"><span class="nm">GOES TO R3</span><span class="od">1.72</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="bnav">
+              <div class="it home"><span class="ic">⌂</span><span class="bal">£74.50</span></div>
+              <div class="it"><span class="ic">⌕</span>All Sports</div>
+              <div class="it"><span class="ic">((•))</span>In-Play</div>
+              <div class="it"><span class="ic">✓</span><span class="badge">1</span>My Bets</div>
+              <div class="it"><span class="ic">▦</span>Casino</div>
+            </div>
+          </div>
+
+          <!-- STAGE 3 : MICRO-BET + BET SLIP -->
+          <div class="stage" data-stage="2">
+            <div class="statusbar"><span>20:14</span><span class="r">▦ ▤ ▮</span></div>
+            <div class="b-head" style="padding-bottom:8px;">
+              <div class="top"><img class="b-head-logo" src="assets/bet365_logo.png" alt="bet365"><span class="ttl">Hughes vs Nurmagomedov <span class="chev">⌄</span></span><span class="circ">⇪</span></div>
+            </div>
+            <div class="streamwrap">
+              <video id="vid-stream2" muted loop playsinline preload="auto" poster="assets/hughes_poster.jpg">
+                <source src="assets/hughes_stream.mp4" type="video/mp4">
+              </video>
+              <span class="stream-tag"><span class="live-dot"></span>LIVE STREAM</span>
+              <span class="stream-badge">R2 · 0:48</span>
+              <button class="sound-pill" data-sound="vid-stream2">🔇 Tap for sound</button>
+            </div>
+            <div class="ipblock body">
+              <div class="ip-grouphd"><span class="t">⚡ Micro-bet · closing <span id="mtimer" style="color:var(--b-odds);">0:06</span></span></div>
+              <div class="ip-mkt">
+                <div class="ttl">Next significant strike to the head?</div>
+                <div class="ip-opts">
+                  <div class="ip-opt" id="mbet-yes"><span class="nm">YES</span><span class="od">1.66</span></div>
+                  <div class="ip-opt"><span class="nm">NO</span><span class="od">2.20</span></div>
+                </div>
+              </div>
+              <div class="ip-grouphd"><span class="t">Next 30 seconds</span></div>
+              <div class="ip-mkt">
+                <div class="ip-opts">
+                  <div class="ip-opt"><span class="nm">TAKEDOWN</span><span class="od">2.40</span></div>
+                  <div class="ip-opt"><span class="nm">KNOCKDOWN</span><span class="od">5.50</span></div>
+                  <div class="ip-opt"><span class="nm">NO ACTION</span><span class="od">1.80</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- bet slip slides up -->
+            <div class="betslip" id="betslip">
+              <div class="bs-hd"><span class="t"><span class="cnt">1</span>Bet Slip</span><span class="edit">Edit Bet</span></div>
+              <div class="bs-sel">
+                <div class="pick"><span>Next strike to head — Yes</span><span class="o">1.85</span></div>
+                <div class="mk">Boosted from 1.66 · Micro-bet · Hughes v Nurmagomedov</div>
+              </div>
+              <div class="bs-stake">
+                <div class="field"><span>£10.00</span><span>Stake</span></div>
+                <div class="ret">Est. returns<b>£18.50</b></div>
+              </div>
+              <button class="bs-place">Place bet · £10.00</button>
+            </div>
+            <div class="bnav">
+              <div class="it home"><span class="ic">⌂</span><span class="bal">£74.50</span></div>
+              <div class="it"><span class="ic">⌕</span>All Sports</div>
+              <div class="it"><span class="ic">((•))</span>In-Play</div>
+              <div class="it"><span class="ic">✓</span><span class="badge">1</span>My Bets</div>
+              <div class="it"><span class="ic">▦</span>Casino</div>
+            </div>
+          </div>
+
+          <!-- STAGE 4 : WINNING MOMENT / SETTLEMENT -->
+          <div class="stage" data-stage="3">
+            <div class="statusbar"><span>20:22</span><span class="r">▦ ▤ ▮</span></div>
+            <div class="b-head" style="padding-bottom:8px;">
+              <div class="top"><img class="b-head-logo" src="assets/bet365_logo.png" alt="bet365"><span class="ttl">Hughes vs Nurmagomedov <span class="chev">⌄</span></span><span class="circ">⇪</span></div>
+            </div>
+            <div class="win">
+              <div class="crown">♛</div>
+              <div class="wname">PAUL<br>HUGHES</div>
+              <span class="wdiv">LIGHTWEIGHT DIVISION</span>
+              <div class="wres">R3 <em>WINNER</em></div>
+              <div class="wko">KO</div>
+              <div class="wmeta">MATCHTIME <b>2:04</b> · ROUND <b>3</b></div>
+              <div class="payout">
+                <span class="pi">✓</span>
+                <div class="pt">YOUR LIVE BET · CASH OUT SETTLED<b>£10.00 → £18.50 paid instantly</b></div>
+              </div>
+            </div>
+            <div class="bnav">
+              <div class="it home"><span class="ic">⌂</span><span class="bal">£93.00</span></div>
+              <div class="it"><span class="ic">⌕</span>All Sports</div>
+              <div class="it"><span class="ic">((•))</span>In-Play</div>
+              <div class="it"><span class="ic">✓</span><span class="badge">1</span>My Bets</div>
+              <div class="it"><span class="ic">▦</span>Casino</div>
+            </div>
+          </div>
+
+          <!-- STAGE 5 : HIGHLIGHTS / BETWEEN FIGHTS -->
+          <div class="stage" data-stage="4">
+            <div class="statusbar"><span>20:24</span><span class="r">▦ ▤ ▮</span></div>
+            <div class="b-head" style="padding-bottom:8px;">
+              <div class="top"><img class="b-head-logo" src="assets/bet365_logo.png" alt="bet365"><span class="ttl">PFL 2026 · Highlights <span class="chev">⌄</span></span><span class="circ">⇪</span></div>
+            </div>
+            <div class="between">
+              <div class="br-head">KO of the night</div>
+              <div class="hl-clip">
+                <video id="vid-ko" muted loop playsinline preload="auto" poster="assets/habirora_poster.jpg">
+                  <source src="assets/habirora_ko.mp4" type="video/mp4">
+                </video>
+                <span class="tag">REPLAY</span>
+                <span class="cap">HABIRORA def. HENDERSON · KO</span>
+                <button class="snd" data-sound="vid-ko">🔇</button>
+              </div>
+              <div class="br-head">Watch &amp; archive</div>
+              <div class="arch-row">
+                <div class="arch"><span>FIGHT WEEK</span></div>
+                <div class="arch"><span>FACEOFFS</span></div>
+                <div class="arch"><span>ORIGINS</span></div>
+              </div>
+              <div class="offer">
+                <div class="ic">b</div>
+                <div class="tx"><b>Next fight live in 4:30</b>£10 free bet on the main event</div>
+                <span class="go">CLAIM</span>
+              </div>
+              <div class="offer">
+                <div class="ic">★</div>
+                <div class="tx"><b>Prediction streak: 3 🔥</b>Pick the next winner to keep it alive</div>
+                <span class="go">PLAY</span>
+              </div>
+            </div>
+            <div class="bnav">
+              <div class="it home"><span class="ic">⌂</span><span class="bal">£93.00</span></div>
+              <div class="it"><span class="ic">⌕</span>All Sports</div>
+              <div class="it"><span class="ic">((•))</span>In-Play</div>
+              <div class="it"><span class="ic">✓</span><span class="badge">1</span>My Bets</div>
+              <div class="it"><span class="ic">▦</span>Casino</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="scrub" id="scrub">
+        <div class="seg" data-dur="6000"><i></i></div>
+        <div class="seg" data-dur="7000"><i></i></div>
+        <div class="seg" data-dur="7000"><i></i></div>
+        <div class="seg" data-dur="5500"><i></i></div>
+        <div class="seg" data-dur="8000"><i></i></div>
+      </div>
+      <div class="phase-cap" id="cap"></div>
+      <div class="ctrls">
+        <button id="prev">‹ Prev</button>
+        <button class="play" id="toggle">⏸ Pause</button>
+        <button id="next">Next ›</button>
+      </div>
+    </div>
+
+    <!-- ============ RIGHT COLUMN ============ -->
+    <div class="rcol">
+      <div class="feature" data-go="0">
+        <span class="fnum">01</span>
+        <div class="fh"><span class="ficon">◎</span><h3>Watch where you bet</h3></div>
+        <p>The live PFL stream and the betting markets share one screen. No app-switching, no lost momentum — the fight and the wager live together.</p>
+      </div>
+      <div class="feature" data-go="1">
+        <span class="fnum">02</span>
+        <div class="fh"><span class="ficon">⚡</span><h3>In-play odds, live</h3></div>
+        <p>Sportradar's real-time feed reprices every market as the fight swings — strikes, control time and momentum move the line round by round.</p>
+      </div>
+      <div class="feature" data-go="2">
+        <span class="fnum">03</span>
+        <div class="fh"><span class="ficon">◷</span><h3>Micro-bet the moment</h3></div>
+        <p>Markets that open and settle in seconds — next strike, this exchange, this 30 seconds — into the bet365 Bet Slip with a boosted price.</p>
+      </div>
+      <div class="feature" data-go="4">
+        <span class="fnum">04</span>
+        <div class="fh"><span class="ficon">▶</span><h3>Brand between rounds</h3></div>
+        <p>Highlights, archive franchises, free-bet offers and prediction streaks fill the gaps — branded inventory that keeps fans engaged between fights.</p>
+      </div>
+
+      <div class="powered">
+        <span class="px">Powered by</span>
+        <img src="assets/bet365_logo.png" alt="bet365">
+        <span class="x">×</span>
+        <span class="sr">SPORTRADAR</span>
+      </div>
+
+      <div class="disclaimer">Illustrative concept. bet365 marks shown to demonstrate how the PFL Event Centre would skin into a partner environment; not a representation of an existing integration. 18+ · begambleaware.org</div>
+    </div>
+
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="sv"><em>63</em>%</div><div class="sl">Of MMA fans placed a bet in LTM — highest of any league</div></div>
+    <div class="stat"><div class="sv"><em>67</em>%</div><div class="sl">PFL fans aged 44 &amp; under — the youngest fanbase in sport</div></div>
+    <div class="stat"><div class="sv">190<em>+</em></div><div class="sl">Territories carrying the integrated betting product</div></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var stages=[].slice.call(document.querySelectorAll('.stage'));
+  var segs=[].slice.call(document.querySelectorAll('.seg'));
+  var feats=[].slice.call(document.querySelectorAll('.feature'));
+  var cap=document.getElementById('cap');
+  var toggle=document.getElementById('toggle');
+  var betslip=document.getElementById('betslip');
+  var captions=[
+    ['01 · Pre-match','Fan opens the bet365 fight card and sees the Hughes v Nurmagomedov lines — spread, total and to-win in fractional-ready decimal.'],
+    ['02 · In-play','The live stream plays inside the app. As Hughes takes over round 2, the live winner odds shorten 2.50 → 1.85 in real time.'],
+    ['03 · Micro-bet','A market opens and closes inside one exchange — the bet drops into the Bet Slip at a boosted 1.85 with a 6-second window.'],
+    ['04 · Winning moment','The KO lands. The live bet is cashed out and pays £18.50 instantly — balance updates the second the fight ends.'],
+    ['05 · Between fights','KO of the night replays on a loop, archive content and free-bet offers keep the fan in-app until the next walkout.']
+  ];
+  var cur=0, playing=true, timer=null;
+  var DUR=segs.map(function(s){return +s.getAttribute('data-dur');});
+  var videos=[].slice.call(document.querySelectorAll('video'));
+
+  function pauseAllVideos(){ videos.forEach(function(v){ try{v.pause();}catch(e){} }); }
+  function playStageVideos(i){
+    pauseAllVideos();
+    var stg=stages[i]; if(!stg)return;
+    var vs=stg.querySelectorAll('video');
+    vs.forEach(function(v){ v.currentTime=0; var p=v.play(); if(p&&p.catch)p.catch(function(){}); });
+  }
+  function lightFeature(i){ feats.forEach(function(f){ f.classList.toggle('lit', +f.getAttribute('data-go')===i); }); }
+  function setCaption(i){ cap.innerHTML='<div class="pk">'+captions[i][0]+'</div><div class="pd">'+captions[i][1]+'</div>'; }
+
+  function show(i){
+    cur=(i+stages.length)%stages.length;
+    stages.forEach(function(s,idx){ s.classList.toggle('on', idx===cur); });
+    segs.forEach(function(s,idx){
+      s.classList.remove('active','done'); var bar=s.querySelector('i');
+      if(idx<cur){ s.classList.add('done'); }
+      else if(idx===cur){ bar.style.animation='none'; void bar.offsetWidth; s.style.setProperty('--dur',DUR[idx]+'ms');
+        if(playing) s.classList.add('active'); else bar.style.width='0'; }
+      else bar.style.width='0';
+    });
+    setCaption(cur); lightFeature(cur); playStageVideos(cur);
+    if(betslip) betslip.classList.remove('up');
+    triggerStage(cur);
+    if(playing) schedule();
+  }
+  function schedule(){ clearTimeout(timer); timer=setTimeout(function(){ show(cur+1); }, DUR[cur]); }
+
+  function triggerStage(i){
+    if(i===1){ animateOdds('l-hughes',2.50,1.85,'up'); animateOdds('l-usman',1.53,1.95,'down'); }
+    if(i===2){ runMicroTimer(); }
+  }
+  function animateOdds(id,from,to,dir){
+    var el=document.getElementById(id); if(!el)return;
+    var p=el.querySelector('.od'); var steps=14,n=0;
+    el.classList.remove('up','down'); void el.offsetWidth; el.classList.add(dir);
+    var iv=setInterval(function(){ n++; var v=from+(to-from)*(n/steps); p.textContent=v.toFixed(2);
+      if(n>=steps){clearInterval(iv); p.textContent=to.toFixed(2);} },70);
+  }
+  var microIv=null;
+  function runMicroTimer(){
+    var t=document.getElementById('mtimer'); if(!t)return; var s=6;
+    clearInterval(microIv); t.textContent='0:0'+s;
+    if(betslip) setTimeout(function(){ betslip.classList.add('up'); }, 1600);
+    var yes=document.getElementById('mbet-yes');
+    if(yes){ var od=yes.querySelector('.od'); setTimeout(function(){ yes.classList.add('up'); od.textContent='1.85'; }, 1500); }
+    microIv=setInterval(function(){ s--; if(s<0){clearInterval(microIv); t.textContent='placed ✓'; return;} t.textContent='0:0'+s; },1000);
+  }
+
+  function setPlay(on){
+    playing=on; toggle.innerHTML=on?'⏸ Pause':'▶ Play'; toggle.classList.toggle('play',on);
+    if(on){ show(cur); } else { clearTimeout(timer);
+      segs.forEach(function(s){var b=s.querySelector('i'); if(s.classList.contains('active')){var w=getComputedStyle(b).width; b.style.animation='none'; b.style.width=w;}});
+    }
+  }
+
+  document.getElementById('next').onclick=function(){ show(cur+1); };
+  document.getElementById('prev').onclick=function(){ show(cur-1); };
+  toggle.onclick=function(){ setPlay(!playing); };
+  segs.forEach(function(s,idx){ s.onclick=function(){ show(idx); }; });
+  feats.forEach(function(f){ f.onclick=function(){ show(+f.getAttribute('data-go')); }; });
+
+  /* sound toggles — unmute the relevant video, keep looping */
+  document.querySelectorAll('.sound-pill, .snd').forEach(function(btn){
+    btn.onclick=function(e){
+      e.stopPropagation();
+      var v=document.getElementById(btn.getAttribute('data-sound'));
+      if(!v)return;
+      v.muted=!v.muted;
+      if(!v.muted){ var p=v.play(); if(p&&p.catch)p.catch(function(){}); btn.innerHTML=btn.classList.contains('snd')?'🔊':'🔊 Sound on'; }
+      else { btn.innerHTML=btn.classList.contains('snd')?'🔇':'🔇 Tap for sound'; }
+    };
+  });
+
+  show(0);
+})();
+</script>
+</body>
+</html>
